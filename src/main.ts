@@ -1,6 +1,5 @@
 
 import {
-  Type,
   TSchema,
   TypeBuilder,
 } from '@sinclair/typebox';
@@ -8,7 +7,6 @@ import {
 const capitalize = (s : string) => 
   s.charAt(0).toUpperCase() + s.substring(1)
 ;
-
 
 const toString : Partial<{ 
   [k in keyof TypeBuilder]: (name: string, s : any) => string
@@ -148,5 +146,3 @@ export default function toModule(
     ),
   ];
 }
-
-console.log(toType('awda', Type.Union([Type.Object({ foo: Type.Optional(Type.String()) })])))
