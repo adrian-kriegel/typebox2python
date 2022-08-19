@@ -1,7 +1,6 @@
 
 import {
-  Kind,
-  Modifier,
+  Type,
   TSchema,
   TypeBuilder,
 } from '@sinclair/typebox';
@@ -12,7 +11,7 @@ const capitalize = (s : string) =>
 
 
 const toString : Partial<{ 
-  [k in keyof TypeBuilder]: <T extends TSchema>(name: string, s : T) => string
+  [k in keyof TypeBuilder]: (name: string, s : any) => string
 }> = 
 {
   String: () => 'str',
@@ -23,7 +22,7 @@ const toString : Partial<{
 
   Object: (name, o) => 
   {
-    const props = Object.entries(o.properties).map(
+    const props = Object.entries(o.properties || {}).map(
       ([key, schema]) => (
         `'${key}': ` + toType(`name.${key}`, schema as TSchema)
       ),
@@ -54,7 +53,21 @@ const toString : Partial<{
     ']',
     
   Optional: (name, s) => `Optional[${toType(name, s)}]`,
+
+  Record: (name, s) => 
+    'dict[str, ' +
+    toType(`${name}.value`, Object.values(s.patternProperties)[0] as TSchema) +
+    ']',
 };
+
+/**
+ * @param symbol symbol
+ * @returns string type 
+ */
+function extractType(symbol : Symbol)
+{
+  return symbol.description?.replace('Kind', '').replace('Modifier', '');
+}
 
 /**
  * Convert a schema to python code.
@@ -67,7 +80,7 @@ const toString : Partial<{
  */
 export function toType(
   name : string,
-  inputSchema : TSchema,
+  inputSchema : any,
 )
 {
   const schema = { ...inputSchema };
@@ -80,23 +93,36 @@ export function toType(
     ;
   }
 
+  /*
+  // code for typebox@0.24
+
   // take either the modifier, kind or type from the schema
   const kind = 
     (schema[Modifier]) && (schema[Modifier] in (toString as any)) ?
       schema[Modifier] :
       schema[Kind] && (schema[Kind] in (toString as any)) ? 
         schema[Kind] : 
-        capitalize(schema.type)
+        schema.type && capitalize(schema.type)
   ;
 
   if (Modifier in schema)
   {
     delete schema[Modifier];
   }
+  */
 
-  if (schema && kind in toString)
+  const type = extractType(
+    schema.modifier || schema.kind,
+  ) || schema.type; 
+
+  if (schema.modifier)
   {
-    return toString[kind as keyof typeof toString]?.(name, schema);
+    delete schema.modifier;
+  }
+
+  if (schema && type in toString)
+  {
+    return toString[type as keyof typeof toString]?.(name, schema);
   }
   else 
   {
@@ -118,8 +144,9 @@ export default function toModule(
       ([name, schema]) => 
         capitalize(name) + 
         ' = ' + 
-        toType(name, schema),
+        toType(capitalize(name), schema),
     ),
   ];
 }
 
+console.log(toType('awda', Type.Union([Type.Object({ foo: Type.Optional(Type.String()) })])))

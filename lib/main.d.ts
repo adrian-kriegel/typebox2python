@@ -8,7 +8,7 @@ import { TSchema } from '@sinclair/typebox';
  * @param inputSchema schema generated using typebox
  * @returns python type code
  */
-export declare function toType(name: string, inputSchema: TSchema): any;
+export declare function toType(name: string, inputSchema: any): any;
 /**
  * @param schemas map of schemas
  * @returns code as string[]
