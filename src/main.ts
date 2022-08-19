@@ -26,7 +26,7 @@ const toString : Partial<{
       ),
     ).join(',\n');
 
-    return `TypedDict('${name}',{\n${props}\n})`; 
+    return `typing.TypedDict('${name}',{\n${props}\n})`; 
   },
 
   Array: (name, s) => `list[${toType(`${name}.items`, s.items)}]`,
@@ -50,7 +50,7 @@ const toString : Partial<{
     toType(name, s.const) +
     ']',
     
-  Optional: (name, s) => `Optional[${toType(name, s)}]`,
+  Optional: (name, s) => `typing.Optional[${toType(name, s)}]`,
 
   Record: (name, s) => 
     'dict[str, ' +
