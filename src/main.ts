@@ -50,7 +50,7 @@ const toString : Partial<{
     toType(name, s.const) +
     ']',
     
-  Optional: (name, s) => `typing.Optional[${toType(name, s)}]`,
+  Optional: (name, s) => `typing.NotRequired[${toType(name, s)}]`,
 
   Record: (name, s) => 
     'dict[str, ' +
