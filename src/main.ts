@@ -116,9 +116,9 @@ class Converter
 
     // take either the modifier, kind or type from the schema
     const kind = 
-      (schema[Modifier]) && (schema[Modifier] in (toString as any)) ?
+      (schema[Modifier]) && (schema[Modifier] in (this as any)) ?
         schema[Modifier] :
-        schema[Kind] && (schema[Kind] in (toString as any)) ? 
+        schema[Kind] && (schema[Kind] in (this as any)) ? 
           schema[Kind] : 
           schema.type && capitalize(schema.type)
     ;
@@ -138,7 +138,7 @@ class Converter
       delete schema.modifier;
     }
 
-    if (schema && type in toString)
+    if (schema && type in this)
     {
       return (this as any)[type]?.(name, schema);
     }
@@ -158,10 +158,9 @@ class Converter
   {
     return [
       'import typing',
-      'try:',
-      '  from typing import NotRequired',
-      'except ImportError:',
-      '  from typing_extensions import NotRequired',
+      semver.gte(this.targetV, '3.11.0') ? 
+        'from typing import NotRequired' : 
+        'from typing_extensions import NotRequired',
       ...Object.entries(schemas).map(
         ([name, schema]) => 
           capitalize(name) + 
