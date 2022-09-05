@@ -1,18 +1,9 @@
 import { TSchema } from '@sinclair/typebox';
 /**
- * Convert a schema to python code.
- *
- * TODO: add support for $ref
- *
- * @param name name to give the type
- * @param inputSchema schema generated using typebox
- * @returns python type code
- */
-export declare function toType(name: string, inputSchema: any): any;
-/**
- * @param schemas map of schemas
- * @returns code as string[]
+ * @param schemas schemas
+ * @param pythonVersion target version
+ * @returns python module code as list of strings
  */
 export default function toModule(schemas: {
     [name: string]: TSchema;
-}): string[];
+}, pythonVersion?: string): string[];
