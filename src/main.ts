@@ -106,8 +106,8 @@ class Converter
     if ('const' in schema)
     {
       return typeof(schema.const) === 'string' ?
-        `'${schema.const}'` : 
-        schema.const
+        `typing.Literal['${schema.const}']` : 
+        `typing.Literal[${schema.const}]`
       ;
     }
 
